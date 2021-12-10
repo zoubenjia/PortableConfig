@@ -5,7 +5,7 @@ switch -Regex ($env:PROCESSOR_ARCHITECTURE) {
     '86' { $OsArc = 'x86'; Break }
     Default {$OsArc = 'x64'}
 }
-Write-Host "OS arch is: "$OsArc
+#Write-Host "OS arch is: "$OsArc
 $Global:OsArc=$OsArc
 $Global:Downloads="$($HOME)\Downloads"
 Class GitItem {
@@ -46,11 +46,11 @@ class Tool {
     {
             $LocalZip = "$($env:TEMP)\$($this.Name).zip"
             Write-Host $LocalZip
+            Set-Location $Global:Downloads
             if (-not (test-path $LocalZip))
             {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 Invoke-WebRequest $this.DLURL -OutFile $LocalZip
-                Set-Location $Global:Downloads
             }
             #Write-Host $this.FullPath
             if (($this.FullPath -eq "") -or -not (Test-Path $this.FullPath))
@@ -62,8 +62,8 @@ class Tool {
     }
     [bool]SetFullPath()
     {
-        Write-Host "Get-ChildItem $($Global:Downloads) -recurse -filter $($this.BinName)"
-        $Path = Get-ChildItem $Global:Downloads -recurse -filter $this.BinName
+        #Write-Host "Get-ChildItem $($Global:Downloads) -recurse -filter $($this.BinName)"
+        $Path = Get-ChildItem "$($Global:Downloads)\$($this.Name)" -recurse -filter $this.BinName
         if ($Path)
         {
             $this.FullPath=$Path.FullName
@@ -125,7 +125,7 @@ class Tool {
             else
             {
                 
-                Write-Host "$($this.Name) is already setup."
+                #Write-Host "$($this.Name) is already setup."
                 return $false
                     
             }
@@ -136,6 +136,7 @@ class Tool {
             Write-Host $_
             return $false            
         }
+        return $true
     }
 }
 [GitItem]$VIMGit = [GitItem]::new("vim","vim-win32-installer","(https://github.*?_$($Global:OsArc).zip)")
@@ -145,10 +146,10 @@ class Tool {
 [Tool]$RCTool=[Tool]::new("rc","ISCLogin.cmd","ISCVPN",$RCGit,"https://api.github.com/repos/zoubenjia/PortableConfig/zipball/usable")
 [Tool]$OCTool=[Tool]::new("oc","openconnect.exe","openconnect",$null,"https://gitlab.com/gereedschap/openconnect-windows/-/package_files/17964980/download")
 function init {
-    $VIMTool.Setup()
-    $VSCodeTool.Setup()
-    $OCTool.Setup()
-    $RCTool.Setup()
+    $sc=$VIMTool.Setup()
+    $sc=$VSCodeTool.Setup()
+    $sc=$OCTool.Setup()
+    $sc=$RCTool.Setup()
     if (-not (Test-Path "$($HOME)\_vimrc"))
     {
         copy-item -force "$($Global:Downloads)\rc\*\_vimrc" -Destination "$($HOME)\_vimrc"
