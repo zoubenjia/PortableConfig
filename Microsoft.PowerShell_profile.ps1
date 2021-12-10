@@ -41,6 +41,7 @@ class Tool {
     [GitItem]$GitProp
     [string]$BinName
     [string]$Alias
+    [string]$FullPath
     [bool]GetPackage()
     {
             $LocalZip = "$($env:TEMP)\$($this.Name).zip"
@@ -48,16 +49,21 @@ class Tool {
             if (-not (test-path $LocalZip))
             {
                 Invoke-WebRequest $this.DLURL -OutFile $LocalZip
+                Set-Location $Global:Downloads
             }
-            Set-Location $Global:Downloads
-            write-host "extracting $($this.Name).zip"
-            Expand-Archive $LocalZip
-            return $true
+            Write-Host $this.FullPath
+            if (-not (Test-Path $this.FullPath))
+            {
+                write-host "extracting $($this.Name).zip"
+                Expand-Archive $LocalZip
+            }
+        return $true
     }
-    [string]GetFullPath()
+    [bool]SetFullPath()
     {
-        $FullPath = Get-ChildItem -recurse -filter $this.BinName
-        return $FullPath.FullName
+        $Path = Get-ChildItem $Global:Downloads -recurse -filter $this.BinName
+        $this.FullPath = $Path.FullName
+        return $true
     }
     Tool(
         [string]$n,
@@ -71,28 +77,88 @@ class Tool {
         $this.BinName = $bn
         $this.Alias = $a
         $this.DLURL = $u
+        $this.GitProp=$g
+        $this.SetFullPath()
+    }
+    [bool]Remove()
+    {
         try {
-            $this.GitProp=$g
-            Write-Host $this.DLURL
-            if ($this.DLURL -eq "")
+            Write-Host "Removing $($this.Name)."
+            Remove-Item "$($Global:Downloads)\$($this.Name)" -Recurse -Force
+            Remove-Item "$($env:TEMP)\$($this.Name).zip" -Force
+
+            return $true
+        }
+        catch {
+            Write-Host $_
+            return $false            
+        }
+    }
+    [bool]Setup()
+    {
+        try {
+            if (Test-Path $this.FullPath)
             {
-                $this.DLURL = $this.GitProp.GetPackURL()
+                Write-Host "$($this.Name) is already setup."
+                return $false
             }
-            if ($this.DLURL -eq "")
-            {
-                throw "No download URL detected!"
+            else {
+                Write-Host $this.DLURL
+                if ($this.DLURL -eq "")
+                {
+                    $this.DLURL = $this.GitProp.GetPackURL()
+                }
+                if ($this.DLURL -eq "")
+                {
+                    throw "No download URL detected!"
+                }
+                $this.GetPackage()
+                $this.SetFullPath()
+                    
             }
-            $this.GetPackage()
+            return $true
         }
         catch {
             Write-Host "ERROR during setup!"            
-            Write-Host $_            
+            Write-Host $_
+            return $false            
         }
     }
 }
-[GitItem]$VIMGit = [GitItem]::new("vim","vim-win32-installer","((https://github.*?_$($Global:OsArc).zip))")
-[Tool]$VIMTool=[Tool]::new("vim","vim.exe","vi",$VIMGit,"")
+[GitItem]$VIMGit = [GitItem]::new("vim","vim-win32-installer","(https://github.*?_$($Global:OsArc).zip)")
 [Tool]$VSCodeTool=[Tool]::new("code","code.cmd","code",$null,"https://code.visualstudio.com/sha/download?build=stable&os=win32-$Global:OsArc-archive")
-set-Alias -Name $VSCodeTool.Alias -Value $VSCodeTool.GetFullPath()
-set-Alias -Name $VIMTool.Alias -Value $VIMTool.GetFullPath()
-Invoke-WebRequest 
+[Tool]$VIMTool=[Tool]::new("vim","vim.exe","vi",$VIMGit,"")
+[GitItem]$RCGit = [GitItem]::new("zoubenjia","PortableConfig","(https://api.github.com/repos/zoubenjia/PortableConfig/zipball/usable)")
+[Tool]$RCTool=[Tool]::new("rc","ISCLogin.cmd","ISCVPN",$RCGit,"https://api.github.com/repos/zoubenjia/PortableConfig/zipball/usable")
+[Tool]$OCTool=[Tool]::new("oc","openconnect.exe","openconnect",$null,"https://gitlab.com/gereedschap/openconnect-windows/-/package_files/17964980/download")
+function init {
+    $VIMTool.Setup()
+    $VSCodeTool.Setup()
+    $OCTool.Setup()
+    $RCTool.Setup()
+    if (-not (Test-Path "$($HOME)\_vimrc"))
+    {
+        copy-item -force "$($Global:Downloads)\rc\PortableConfig-usable\_vimrc" -Destination "$($HOME)\_vimrc"
+    }
+    if (-not (Test-Path "$($HOME)\VPN"))
+    {
+        copy-item -Force "$($Global:Downloads)\rc\PortableConfig-usable\VPN" -Destination "$($HOME)\VPN"
+    }
+}
+function reset {
+    $VIMTool.Remove()
+    $VSCodeTool.Remove()
+    $OCTool.Remove()
+    $RCTool.Remove()
+    Remove-Alias $VSCodeTool.Alias   
+    Remove-Alias $VIMTool.Alias   
+    Remove-Alias $OCTool.Alias
+    Remove-Alias ISCVPN   
+    Remove-Alias AUHOSTVPN
+}
+#reset
+init
+set-Alias -Name $VSCodeTool.Alias -Value $VSCodeTool.FullPath
+set-Alias -Name $VIMTool.Alias -Value $VIMTool.FullPath
+set-alias -Name ISCVPN -Value "$($Global:Downloads)\VPN\ISCLogin.cmd"
+set-alias -Name AUHOSTVPN -Value "$($Global:Downloads)\VPN\Login.cmd"
