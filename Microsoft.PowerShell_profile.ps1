@@ -1,4 +1,3 @@
-#Set-PSReadLineOption -EditMode vi -BellStyle None
 switch -Regex ($env:PROCESSOR_ARCHITECTURE) {
     '64' { $OsArc = 'x64'; Break }
     '32' { $OsArc = 'x32'; Break }
