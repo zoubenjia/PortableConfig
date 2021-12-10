@@ -173,5 +173,6 @@ function reset {
 init
 set-Alias -Name $VSCodeTool.Alias -Value $VSCodeTool.FullPath
 set-Alias -Name $VIMTool.Alias -Value $VIMTool.FullPath
+set-Alias -Name $OCTool.Alias -Value $OCTool.FullPath
 set-alias -Name ISCVPN -Value "$($Global:Downloads)\VPN\ISCLogin.cmd"
-set-alias -Name AUHOSTVPN -Value "$($Global:Downloads)\VPN\Login.cmd"
+set-alias -Name AUHOSTVPN -Value "$($Global:Downloads)\VPN\Login.ps1"
