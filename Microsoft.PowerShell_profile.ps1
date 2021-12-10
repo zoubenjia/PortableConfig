@@ -48,11 +48,12 @@ class Tool {
             Write-Host $LocalZip
             if (-not (test-path $LocalZip))
             {
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 Invoke-WebRequest $this.DLURL -OutFile $LocalZip
                 Set-Location $Global:Downloads
             }
-            Write-Host $this.FullPath
-            if (-not (Test-Path $this.FullPath))
+            #Write-Host $this.FullPath
+            if (($this.FullPath -eq "") -or -not (Test-Path $this.FullPath))
             {
                 write-host "extracting $($this.Name).zip"
                 Expand-Archive $LocalZip
@@ -61,8 +62,15 @@ class Tool {
     }
     [bool]SetFullPath()
     {
+        Write-Host "Get-ChildItem $($Global:Downloads) -recurse -filter $($this.BinName)"
         $Path = Get-ChildItem $Global:Downloads -recurse -filter $this.BinName
-        $this.FullPath = $Path.FullName
+        if ($Path)
+        {
+            $this.FullPath=$Path.FullName
+        }
+        else {
+            $this.FullPath=""
+        }
         return $true
     }
     Tool(
@@ -97,26 +105,31 @@ class Tool {
     [bool]Setup()
     {
         try {
-            if (Test-Path $this.FullPath)
+            if (($this.FullPath -eq "") -or -not(Test-Path $this.FullPath))
             {
-                Write-Host "$($this.Name) is already setup."
-                return $false
-            }
-            else {
                 Write-Host $this.DLURL
                 if ($this.DLURL -eq "")
                 {
                     $this.DLURL = $this.GitProp.GetPackURL()
+                    write-host "getting pack url"
                 }
                 if ($this.DLURL -eq "")
                 {
                     throw "No download URL detected!"
                 }
+                Write-Host "Getting $($this.Name) Package."
                 $this.GetPackage()
                 $this.SetFullPath()
+                return $true                    
+            }
+            else
+            {
+                
+                Write-Host "$($this.Name) is already setup."
+                return $false
                     
             }
-            return $true
+        
         }
         catch {
             Write-Host "ERROR during setup!"            
@@ -138,11 +151,11 @@ function init {
     $RCTool.Setup()
     if (-not (Test-Path "$($HOME)\_vimrc"))
     {
-        copy-item -force "$($Global:Downloads)\rc\PortableConfig-usable\_vimrc" -Destination "$($HOME)\_vimrc"
+        copy-item -force "$($Global:Downloads)\rc\*\_vimrc" -Destination "$($HOME)\_vimrc"
     }
     if (-not (Test-Path "$($HOME)\VPN"))
     {
-        copy-item -Force "$($Global:Downloads)\rc\PortableConfig-usable\VPN" -Destination "$($HOME)\VPN"
+        copy-item -Force "$($Global:Downloads)\rc\*\VPN" -Destination "$($HOME)\VPN"
     }
 }
 function reset {
