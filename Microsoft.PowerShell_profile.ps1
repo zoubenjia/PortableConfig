@@ -158,6 +158,10 @@ function init {
     {
         copy-item -Force "$($Global:Downloads)\rc\*\VPN" -Recurse -Destination "$($Global:Downloads)\VPN"
     }
+    if (-not ("$($HOME)\Document\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"))
+    {
+        copy-item -Force "$($Global:Downloads)\rc\*\Microsoft.PowerShell_profile.ps1" -Destination "$($HOME)\Document\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+    }
 }
 function reset {
     $VIMTool.Remove()
