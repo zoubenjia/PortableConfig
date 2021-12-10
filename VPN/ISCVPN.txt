@@ -1,5 +1,0 @@
-connect sslvpn.intersystems.com.au
-
-bzou
-2wsx@WSX3edc#EDC
-y
