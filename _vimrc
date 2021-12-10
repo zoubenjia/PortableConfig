@@ -28,4 +28,4 @@ vnoremap <C-c> "*y
 imap <C-v> <C-r><C-p>*
 imap <S-I> <C-r><C-p>*
 imap jj <Esc>
-set lines=80 
+set lines=35 
