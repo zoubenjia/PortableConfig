@@ -144,7 +144,7 @@ class Tool {
 [Tool]$VSCodeTool=[Tool]::new("code","code.cmd","code",$null,"https://code.visualstudio.com/sha/download?build=stable&os=win32-$Global:OsArc-archive")
 [Tool]$VIMTool=[Tool]::new("vim","vim.exe","vi",$VIMGit,"")
 [GitItem]$RCGit = [GitItem]::new("zoubenjia","PortableConfig","(https://api.github.com/repos/zoubenjia/PortableConfig/zipball/usable)")
-[Tool]$RCTool=[Tool]::new("rc","ISCLogin.cmd","ISCVPN",$RCGit,"https://github.com/zoubenjia/PortableConfig/archive/refs/tags/latest.zip")
+[Tool]$RCTool=[Tool]::new("rc","ISCLogin.ps1","ISCVPN",$RCGit,"https://github.com/zoubenjia/PortableConfig/archive/refs/tags/latest.zip")
 [Tool]$OCTool=[Tool]::new("oc","openconnect.exe","openconnect",$null,"https://gitlab.com/gereedschap/openconnect-windows/-/package_files/17964980/download")
 function init {
     $sc=$VIMTool.Setup()
@@ -161,7 +161,7 @@ function init {
     }
     if (-not (test-path $profile))
     {
-        copy-item -Force "$($Global:Downloads)\rc\*\Microsoft.PowerShell_profile.ps1" -Destination $profile
+        #copy-item -Force "$($Global:Downloads)\rc\*\Microsoft.PowerShell_profile.ps1" -Destination $profile
     }
 }
 function reset {
