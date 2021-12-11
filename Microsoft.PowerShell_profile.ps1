@@ -186,4 +186,7 @@ set-Alias -Name $OCTool.Alias -Value $OCTool.FullPath
 set-alias -Name ISCVPN -Value "$($Global:Downloads)\VPN\ISCLogin.ps1"
 set-alias -Name BHVPN -Value "$($Global:Downloads)\VPN\BHLogin.ps1"
 set-alias -name vpncli -value "C:\Program Files (x86)\Cisco\Cisco AnyConnect Secure Mobility Client\vpncli.exe"
+<<<<<<< HEAD
 set-Alias -Name $PyTool.Alias -Value $PyTool.FullPath
+=======
+>>>>>>> 731f4b485cff47c52af20d4f4d1e29e6cb52372f
