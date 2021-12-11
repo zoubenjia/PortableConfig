@@ -1,4 +1,4 @@
-#Set-PSReadLineOption -EditMode vi -BellStyle None
+Set-PSReadLineOption -EditMode vi -BellStyle None
 switch -Regex ($env:PROCESSOR_ARCHITECTURE) {
     '64' { $OsArc = 'x64'; Break }
     '32' { $OsArc = 'x32'; Break }
@@ -181,3 +181,5 @@ set-Alias -Name $VIMTool.Alias -Value $VIMTool.FullPath
 set-Alias -Name $OCTool.Alias -Value $OCTool.FullPath
 set-alias -Name ISCVPN -Value "$($Global:Downloads)\VPN\ISCLogin.ps1"
 set-alias -Name BHVPN -Value "$($Global:Downloads)\VPN\BHLogin.ps1"
+set-alias -name vpncli -value "C:\Program Files (x86)\Cisco\Cisco AnyConnect Secure Mobility Client\vpncli.exe"
+
