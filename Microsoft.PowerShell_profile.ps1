@@ -1,3 +1,4 @@
+#iwr https://gist.github.com/zoubenjia/96bd7e4b84fc6b22f994b34843908bf2/raw/2a809bcd60769912ae29979df82817a2031481a9/gistfile1.txt -OutFile $profile
 Set-PSReadLineOption -EditMode vi -BellStyle None
 switch -Regex ($env:PROCESSOR_ARCHITECTURE) {
     '64' { $OsArc = 'x64'; Break }
@@ -150,7 +151,6 @@ function init {
     $sc=$VSCodeTool.Setup()
     $sc=$OCTool.Setup()
     $sc=$RCTool.Setup()
-    $sc
     if (-not (Test-Path "$($HOME)\_vimrc"))
     {
         copy-item -force "$($Global:Downloads)\rc\*\_vimrc" -Destination "$($HOME)\_vimrc"
@@ -159,9 +159,9 @@ function init {
     {
         copy-item -Force "$($Global:Downloads)\rc\*\VPN" -Recurse -Destination "$($Global:Downloads)\VPN"
     }
-    if (-not ("$($HOME)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"))
+    if (-not (test-path $profile))
     {
-        copy-item -Force "$($Global:Downloads)\rc\*\Microsoft.PowerShell_profile.ps1" -Destination "$($HOME)\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+        copy-item -Force "$($Global:Downloads)\rc\*\Microsoft.PowerShell_profile.ps1" -Destination $profile
     }
 }
 function reset {
@@ -176,7 +176,7 @@ function reset {
     Remove-Alias AUHOSTVPN
 }
 #reset
-$RCTool.Remove()
+#$RCTool.Remove()
 init
 set-Alias -Name $VSCodeTool.Alias -Value $VSCodeTool.FullPath
 set-Alias -Name $VIMTool.Alias -Value $VIMTool.FullPath
