@@ -1,1 +1,1 @@
-Get-Content AUHOST.txt | openconnect hsau01.intersystems.com.au -u 'bzou' --passwd-on-stdin 
+Get-Content "$($home)\VPN\AUHOST.txt" | openconnect hsau01.intersystems.com.au -u 'bzou' --passwd-on-stdin 

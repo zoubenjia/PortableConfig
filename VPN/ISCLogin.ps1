@@ -1,1 +1,1 @@
-cd "C:\Program Files (x86)\Cisco\Cisco AnyConnect Secure Mobility Client" & .\vpncli -s < C:\Users\bzou\Downloads\VPN\ISCVPN.txt
+Get-Content "$($HOME)\VPN\ISCVPN.txt"| vpncli -s 
