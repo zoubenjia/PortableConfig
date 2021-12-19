@@ -1,4 +1,5 @@
 #iwr https://gist.github.com/zoubenjia/96bd7e4b84fc6b22f994b34843908bf2/raw/2a809bcd60769912ae29979df82817a2031481a9/gistfile1.txt -OutFile $profile
+#github action test
 Set-PSReadLineOption -EditMode vi -BellStyle None
 switch -Regex ($env:PROCESSOR_ARCHITECTURE) {
     '64' { $OsArc = 'x64'; Break }
