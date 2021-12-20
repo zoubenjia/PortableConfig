@@ -39,7 +39,7 @@ jobs:
       - name: Deploy
         uses: exuanbo/actions-deploy-gist@v1
         with:
-          token: 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
+          token:  "${{ secrets.GITHUB_TOKEN }}"
           gist_id: 96bd7e4b84fc6b22f994b34843908bf2
           gist_description: "init script"
           gist_file_name: psprofile
