@@ -43,4 +43,4 @@ jobs:
           gist_id: 96bd7e4b84fc6b22f994b34843908bf2
           gist_description: "init script"
           gist_file_name: psprofile
-          file_path: ./init/rc/Microsoft.PowerShell_profile.ps1
+          file_path: ./init/Microsoft.PowerShell_profile.ps1
