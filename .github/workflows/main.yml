@@ -20,12 +20,10 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: zoubenjia/PortableConfig@main
 
       # Runs a single command using the runners shell
       - name: pack latest release
-        run: echo Hello, world!
+      - uses: zoubenjia/PortableConfig@main
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
