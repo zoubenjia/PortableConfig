@@ -23,9 +23,9 @@ jobs:
     steps:
       # Runs a single command using the runners shell
       - name: pack latest release
-      - uses: zoubenjia/PortableConfig@main
-      - run: |
+        run: |
           echo "Release updated."
+      - uses: zoubenjia/PortableConfig@main
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
