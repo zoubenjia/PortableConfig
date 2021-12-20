@@ -154,8 +154,8 @@ function init {
     foreach ($item in $Candidates) {
         $sc = $item.Setup() 
         set-Alias -Name $item.Alias -Value $item.FullPath
+        Write-Output "Setting up $($itme.Name) $sc"
     }
-    Write-Output $sc
 
     if (-not (Test-Path "$($HOME)\_vimrc"))
     {
@@ -180,4 +180,5 @@ function reset {
     Remove-Alias ISCVPN   
     Remove-Alias AUHOSTVPN
 }
+#reset
 init
