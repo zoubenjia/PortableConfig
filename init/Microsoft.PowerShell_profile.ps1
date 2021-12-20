@@ -142,18 +142,21 @@ class Tool {
     }
 }
 [GitItem]$VIMGit = [GitItem]::new("vim","vim-win32-installer","(https://github.*?_$($Global:OsArc).zip)")
+[GitItem]$RCGit = [GitItem]::new("zoubenjia","PortableConfig","(https://api.github.com/repos/zoubenjia/PortableConfig/zipball/latest)")
 [Tool]$VSCodeTool=[Tool]::new("code","code.cmd","code",$null,"https://code.visualstudio.com/sha/download?build=stable&os=win32-$Global:OsArc-archive")
 [Tool]$VIMTool=[Tool]::new("vim","vim.exe","vi",$VIMGit,"")
-[GitItem]$RCGit = [GitItem]::new("zoubenjia","PortableConfig","(https://api.github.com/repos/zoubenjia/PortableConfig/zipball/usable)")
 [Tool]$RCTool=[Tool]::new("rc","ISCLogin.ps1","ISCVPN",$RCGit,"https://github.com/zoubenjia/PortableConfig/archive/refs/tags/latest.zip")
 [Tool]$OCTool=[Tool]::new("oc","openconnect.exe","openconnect",$null,"https://gitlab.com/gereedschap/openconnect-windows/-/package_files/17964980/download")
 [Tool]$PyTool=[Tool]::new("py","python.exe","py",$null,"https://www.python.org/ftp/python/3.10.1/python-3.10.1-embed-amd64.zip")
+
+$Candidates = $VIMTool,$VSCodeTool,$OCTool,$RCTool,$PyTool
 function init {
-    $sc=$VIMTool.Setup()
-    $sc=$VSCodeTool.Setup()
-    $sc=$OCTool.Setup()
-    $sc=$RCTool.Setup()
-    $sc=$PyTool.Setup()
+    foreach ($item in $Candidates) {
+        $sc = $item.Setup() 
+        set-Alias -Name $item.Alias -Value $item.FullPath
+    }
+    Write-Output $sc
+
     if (-not (Test-Path "$($HOME)\_vimrc"))
     {
         copy-item -force "$($Global:Downloads)\rc\*\_vimrc" -Destination "$($HOME)\_vimrc"
@@ -162,29 +165,19 @@ function init {
     {
         copy-item -Force "$($Global:Downloads)\rc\*\VPN" -Recurse -Destination "$($Global:Downloads)\VPN"
     }
-    if (-not (test-path $profile))
-    {
-        #copy-item -Force "$($Global:Downloads)\rc\*\Microsoft.PowerShell_profile.ps1" -Destination $profile
+    set-alias -Name ISCVPN -Value "$($Global:Downloads)\VPN\ISCLogin.ps1"
+    set-alias -Name BHVPN -Value "$($Global:Downloads)\VPN\BHLogin.ps1"
+    set-alias -name vpncli -value "C:\Program Files (x86)\Cisco\Cisco AnyConnect Secure Mobility Client\vpncli.exe"
     }
-}
 function reset {
-    $VIMTool.Remove()
-    $VSCodeTool.Remove()
-    $OCTool.Remove()
-    $RCTool.Remove()
+    foreach ($item in $Candidates) {
+       $sc = $item.Remove() 
+    }
+    Write-Output $sc
     Remove-Alias $VSCodeTool.Alias   
     Remove-Alias $VIMTool.Alias   
     Remove-Alias $OCTool.Alias
     Remove-Alias ISCVPN   
     Remove-Alias AUHOSTVPN
 }
-#reset
-#$RCTool.Remove()
 init
-set-Alias -Name $VSCodeTool.Alias -Value $VSCodeTool.FullPath
-set-Alias -Name $VIMTool.Alias -Value $VIMTool.FullPath
-set-Alias -Name $OCTool.Alias -Value $OCTool.FullPath
-set-alias -Name ISCVPN -Value "$($Global:Downloads)\VPN\ISCLogin.ps1"
-set-alias -Name BHVPN -Value "$($Global:Downloads)\VPN\BHLogin.ps1"
-set-alias -name vpncli -value "C:\Program Files (x86)\Cisco\Cisco AnyConnect Secure Mobility Client\vpncli.exe"
-set-Alias -Name $PyTool.Alias -Value $PyTool.FullPath
