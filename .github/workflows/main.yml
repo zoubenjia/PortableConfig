@@ -25,9 +25,11 @@ jobs:
       - name: pack latest release
         run: |
           echo "Release updated."
-      - uses: zoubenjia/PortableConfig@main
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            rc/_vimrc
+            rc/*
+            VPN/*
+            init/*
