@@ -25,7 +25,7 @@ jobs:
       - name: pack latest release
         run: |
           echo "Release updated."
-      - uses: zoubenjia/PortableConfig@main
+      - uses: zoubenjia/PortableConfig@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
