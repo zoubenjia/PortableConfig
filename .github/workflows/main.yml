@@ -17,7 +17,7 @@ jobs:
   build:
     # The type of runner that the job will run on
     name: build latest release
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -25,9 +25,11 @@ jobs:
       - name: pack latest release
         run: |
           echo "Release updated."
+
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
           prerelease: false
           files: |
             rc/*
