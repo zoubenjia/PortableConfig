@@ -56,7 +56,7 @@ class Tool {
                 #$7zcmd = & "$($LocalExe)" /S /D="$($Global:Downloads)\$($this.Name)\"
                 #Invoke-Expression $7zcmd 
             }
-            elseif ([System.IO.Path]::GetExtension($this.DLURL) -eq "zip") {
+            else{#if ([System.IO.Path]::GetExtension($this.DLURL) -eq "zip") {
                 $LocalZip = "$($env:TEMP)\$($this.Name).zip"
                 if (-not (test-path $LocalZip)) {
                     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
