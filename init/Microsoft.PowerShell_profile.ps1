@@ -17,7 +17,7 @@ Class GitItem {
     [string]GetPackURL() {
         Write-Host "https://api.github.com/repos/$($this.User)/$($this.Repo)/releases/latest"      
         $ApiLatest = Invoke-RestMethod "https://api.github.com/repos/$($this.User)/$($this.Repo)/releases/latest"
-        #Write-Host $ApiLatest
+        Write-Host $ApiLatest
         $URLmatches = Select-String -Pattern $this.DlPattern -InputObject $ApiLatest
         write-debug $this.DlPattern
         return $URLmatches.Matches.Groups[1].Value
@@ -42,10 +42,10 @@ class Tool {
     [string]$Alias
     [string]$FullPath
     [bool]GetPackage() {
-        #Write-Host $this.FullPath
         Set-Location $Global:Downloads
         if (($this.FullPath -eq "") -or -not (Test-Path $this.FullPath)) {
-            if ($this.Name -eq "7z") {
+		write-host "$($this.DLURL)"
+            if ($this.DLURL -match "7z") {
                 $LocalExe = "$($env:TEMP)\$($this.Name).exe"
                 Write-Host "Downloading $LocalExe"
                 if (-not (test-path $LocalExe)) {
@@ -56,7 +56,8 @@ class Tool {
                 #$7zcmd = & "$($LocalExe)" /S /D="$($Global:Downloads)\$($this.Name)\"
                 #Invoke-Expression $7zcmd 
             }
-            else{#if ([System.IO.Path]::GetExtension($this.DLURL) -eq "zip") {
+            else{#([System.IO.Path]::GetExtension($this.DLURL) -eq "zip") {
+        Write-Host "dlurl:$($this.DLURL)"
                 $LocalZip = "$($env:TEMP)\$($this.Name).zip"
                 if (-not (test-path $LocalZip)) {
                     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -139,7 +140,7 @@ class Tool {
             return $true
         }
     }
-    [Tool]$7ZTool = [Tool]::new("7z", "7z.exe", "7z",$null, "https://www.7-zip.org/a/7z2106-x64.exe")
+    [Tool]$7ZTool = [Tool]::new("7z", "7z.exe", "7z",$null, "https://www.7-zip.org/a/7z2107-x64.exe")
 
     [GitItem]$VIMGit = [GitItem]::new("vim", "vim-win32-installer", "(https://github.*?_$($Global:OsArc).zip)")
     [GitItem]$RCGit = [GitItem]::new("zoubenjia", "PortableConfig", "(https://api.github.com/repos/zoubenjia/PortableConfig/zipball/latest)")
@@ -150,9 +151,10 @@ class Tool {
     [Tool]$PyTool = [Tool]::new("py", "python.exe", "py", $null, "https://www.python.org/ftp/python/3.10.1/python-3.10.1-embed-amd64.zip")
     [Tool]$GitTool = [Tool]::new("git", "git.exe", "git", $null, "https://github.com/git-for-windows/git/releases/download/v2.34.1.windows.1/PortableGit-2.34.1-64-bit.7z.exe")
 
-    $Candidates = $7zTool, $VIMTool, $VSCodeTool, $OCTool, $RCTool, $PyTool, $GitTool
+    $Candidates = $VSCodeTool, $OCTool, $RCTool, $PyTool, $GitTool
+    #$Candidates = $7zTool, $VIMTool, $VSCodeTool, $OCTool, $RCTool, $PyTool, $GitTool
     function init {
-        Invoke-Expression $Global:7zcmd 
+        #Invoke-Expression $Global:7zcmd 
         foreach ($item in $Candidates) {
             $sc = $item.Setup() 
             if (Test-Path $item.FullPath)
@@ -171,6 +173,7 @@ class Tool {
         set-alias -Name ISCVPN -Value "$($Global:Downloads)\VPN\ISCLogin.ps1"
         set-alias -Name BHVPN -Value "$($Global:Downloads)\VPN\BHLogin.ps1"
         set-alias -name vpncli -value "C:\Program Files (x86)\Cisco\Cisco AnyConnect Secure Mobility Client\vpncli.exe"
+	write-output "done"
     }
     function reset {
         foreach ($item in $Candidates) {
@@ -181,6 +184,7 @@ class Tool {
         Remove-Alias ISCVPN   
         Remove-Alias AUHOSTVPN
     }
-    #reset
+    reset
     init
     #& $env:TEMP\7z.exe /S /D=$Global:Downloads/7z/
+
