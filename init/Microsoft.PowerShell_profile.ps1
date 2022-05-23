@@ -44,7 +44,7 @@ class Tool {
     [bool]GetPackage() {
         Set-Location $Global:Downloads
         if (($this.FullPath -eq "") -or -not (Test-Path $this.FullPath)) {
-		write-host "$($this.DLURL)"
+		write-host "$($this.FullPath)"
             if ($this.DLURL -match "7z") {
                 $LocalExe = "$($env:TEMP)\$($this.Name).exe"
                 Write-Host "Downloading $LocalExe"
@@ -53,7 +53,7 @@ class Tool {
                     Invoke-WebRequest $this.DLURL -OutFile $LocalExe
                 }
                 $Global:7zcmd = "& `"$($LocalExe)`" /S /D=`"$($Global:Downloads)\$($this.Name)\`""
-                #$7zcmd = & "$($LocalExe)" /S /D="$($Global:Downloads)\$($this.Name)\"
+                $7zcmd = & "$($LocalExe)" /S /D="$($Global:Downloads)\$($this.Name)\"
                 #Invoke-Expression $7zcmd 
             }
             else{#([System.IO.Path]::GetExtension($this.DLURL) -eq "zip") {
@@ -151,7 +151,7 @@ class Tool {
     [Tool]$PyTool = [Tool]::new("py", "python.exe", "py", $null, "https://www.python.org/ftp/python/3.10.1/python-3.10.1-embed-amd64.zip")
     [Tool]$GitTool = [Tool]::new("git", "git.exe", "git", $null, "https://github.com/git-for-windows/git/releases/download/v2.34.1.windows.1/PortableGit-2.34.1-64-bit.7z.exe")
 
-    $Candidates = $VSCodeTool, $OCTool, $RCTool, $PyTool, $GitTool
+    $Candidates = $VIMTool,$VSCodeTool, $OCTool, $RCTool, $PyTool,$GitTool
     #$Candidates = $7zTool, $VIMTool, $VSCodeTool, $OCTool, $RCTool, $PyTool, $GitTool
     function init {
         #Invoke-Expression $Global:7zcmd 
@@ -159,8 +159,13 @@ class Tool {
             $sc = $item.Setup() 
             if (Test-Path $item.FullPath)
             {
-                set-Alias -Name "$($item.Alias)" -Value "$($item.FullPath)"
-                Write-Output "Setting up $($item.Name). FullPath:$($item.FullPath) $sc"
+		$aliases= @{
+			Name=$item.Alias 
+			Value=$item.FullPath
+			Scope = "Global"
+		}
+                Set-Alias @aliases
+                Write-Output "Setting up $($aliases.Value). FullPath:$($item.FullPath) $sc"
             }
         }
 
@@ -186,5 +191,5 @@ class Tool {
     }
     reset
     init
-    #& $env:TEMP\7z.exe /S /D=$Global:Downloads/7z/
+    & $env:TEMP\7z.exe /S /D=$Global:Downloads/7z/
 
